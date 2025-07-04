@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormState } from 'react-dom';
+import { useActionState, useEffect } from 'react';
 import type { Hospital } from '@/lib/types';
 import type { FormState } from '@/app/hospitals/actions';
 
@@ -16,7 +16,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 type HospitalFormProps = {
@@ -32,7 +31,7 @@ const initialState: FormState = {
 };
 
 export function HospitalForm({ hospital, action }: HospitalFormProps) {
-  const [state, formAction] = useFormState(action, initialState);
+  const [state, formAction] = useActionState(action, initialState);
   const { toast } = useToast();
 
   useEffect(() => {
