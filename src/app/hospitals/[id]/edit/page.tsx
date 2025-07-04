@@ -8,7 +8,9 @@ export default async function EditHospitalPage({
 }: {
   params: { id: string };
 }) {
-  const hospital = await getHospitalById(params.id);
+  // Access id property after destructuring params to avoid Next.js sync API usage error
+  const { id } = await params;
+  const hospital = await getHospitalById(id);
 
   if (!hospital) {
     notFound();
