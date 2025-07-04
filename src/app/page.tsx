@@ -1,25 +1,15 @@
 import { getHospitals } from '@/lib/data';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, BedDouble, Building, Users } from 'lucide-react';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
-import {
-  Bar,
-  BarChart as RechartsBarChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import type { ChartConfig } from '@/components/ui/chart';
+import { DashboardChart } from '@/components/dashboard-chart';
 
 export default async function DashboardPage() {
   const hospitals = await getHospitals();
 
   const totalHospitals = hospitals.length;
   const totalBeds = hospitals.reduce((sum, hospital) => sum + hospital.beds, 0);
-  const averageBeds = totalBeds / totalHospitals || 0;
+  const averageBeds = totalHospitals > 0 ? totalBeds / totalHospitals : 0;
 
   const chartData = hospitals.map((h) => ({
     name: h.name.split(' ')[0], // Use first word of name for brevity
@@ -31,7 +21,7 @@ export default async function DashboardPage() {
       label: 'Beds',
       color: 'hsl(var(--primary))',
     },
-  };
+  } satisfies ChartConfig;
 
   return (
     <div className="flex flex-col">
@@ -95,33 +85,7 @@ export default async function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="h-[250px] w-full">
-              <RechartsBarChart
-                data={chartData}
-                margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
-                accessibilityLayer
-              >
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="name"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                />
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                />
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent indicator="dot" />}
-                />
-                <Bar dataKey="beds" fill="hsl(var(--primary))" radius={4} />
-              </RechartsBarChart>
-            </ChartContainer>
+            <DashboardChart chartData={chartData} chartConfig={chartConfig} />
           </CardContent>
         </Card>
       </main>
